@@ -7,7 +7,7 @@ class TestMethods(unittest.TestCase):
 
     def test_case_get_throttled(self):
         t = GenCmd()
-        print(t.gencmd('get_throttled'))
+        print(t.send('get_throttled'))
         self.assertTrue(True)
 
 
