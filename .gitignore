@@ -1,0 +1,16 @@
+.venv
+build
+__pycache__
+dist
+
+# cython output
+gencmd.c
+
+# setup.py bdist_wheel output
+gencmd.egg-info
+
+# IDE specific
+.vscode
+
+# cython-debug
+cython_debug
