@@ -35,7 +35,7 @@ setup(name='gencmd',
         [
             Extension('gencmd',
             sources=['gencmd.pyx'],
-            libraries=['gencmd', 'vchiq_arm'],
+            libraries=['gencmd', 'vchiq_arm', 'bcm_host'],
             language='v',
             extra_compile_args=['-I./'],
             extra_link_args=[
