@@ -98,7 +98,7 @@ fi
 
 
 if [ "x$COMMAND" == "xtests" ] || [ "x$COMMAND" == "xtest" ]; then
-    pip_builc
+    pip_build
     .venv/bin/pip3 install -r tests-requirements.txt
 
     .venv/bin/pip uninstall -y gencmd
