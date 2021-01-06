@@ -64,26 +64,16 @@ function pip_build {
     # Build tools for build)
     mkdir -p build
     rm -fr ~/.vmodules/cache/
-    V_FLAGS='-v -cg -shared'
+    V_FLAGS='-v -cg -shared -keepc'
     # gcc tools/makeheaders.c -o build/makeheaders
     v $V_FLAGS gencmd.v -o build/libgencmd || exit 1
     # Mock library for tests
     v $V_FLAGS thirdparty/mocks/vchiq_arm/vchiq_arm.v -o build/libvchiq_arm || exit 1
     v $V_FLAGS thirdparty/mocks/bcm_host/bcm_host.v -o build/libbcm_host || exit 1
-    v $V_FLAGS thirdparty/mocks/mmal_core/mmal_core.v -o build/libmmal_core || exit 1
-    v $V_FLAGS thirdparty/mocks/mmal_util/mmal_util.v -o build/libmmal_util || exit 1
-    v $V_FLAGS thirdparty/mocks/mmal_components/mmal_components.v -o build/libmmal_components || exit 1
-    v $V_FLAGS thirdparty/mocks/mmal_vc_client/mmal_vc_client.v -o build/libmmal_vc_client || exit 1
-    v $V_FLAGS thirdparty/mocks/mmal/mmal.v -o build/libmmal || exit 1
 
-    cp /tmp/v/libgencmd.tmp.so.c build/gencmd.sample.h
-    cp /tmp/v/libvchiq_arm.tmp.so.c build/vchiq_arm.sample.h
-    cp /tmp/v/libbcm_host.tmp.so.c build/bcm_host.sample.h
-    cp /tmp/v/libmmal_core.tmp.so.c build/mmal_core.sample.h
-    cp /tmp/v/libmmal_util.tmp.so.c build/mmal_util.sample.h
-    cp /tmp/v/libmmal_components.tmp.so.c build/mmal_components.sample.h
-    cp /tmp/v/libmmal_vc_client.tmp.so.c build/mmal_vc_client.sample.h
-    cp /tmp/v/libmmal.tmp.so.c build/mmal.sample.h
+    cp /tmp/v/libgencmd.tmp.so.c build/gencmd.sample.h || exit 1
+    cp /tmp/v/libvchiq_arm.tmp.so.c build/vchiq_arm.sample.h || exit 1
+    cp /tmp/v/libbcm_host.tmp.so.c build/bcm_host.sample.h || exit 1
 
     .venv/bin/python setup.py bdist_wheel
 }
