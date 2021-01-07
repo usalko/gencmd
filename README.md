@@ -9,7 +9,7 @@ Package available through pypi.org: https://pypi.org/manage/project/gencmd
 
 ## build
 If you have the necessity to build a package from sources keep in mind that I've used vlang: https://github.com/vlang/v
-Early I've tried a different approach but use external libraries from vlang much easier.
+Early I tried a different approach but use external libraries from vlang much easier.
 
 After install vlang from sources or from binaries (see https://vlang.io/) you could use `buildew` script.
 
