@@ -1,0 +1,127 @@
+#!/bin/bash
+
+# CHECK PYTHON 3
+if command -v python3 &>/dev/null; then
+   echo Python3 available
+else
+   echo Python3 not available, please install it or add to the PATH variable
+   exit 1
+fi
+
+# CHECK PIP
+if command -v python3 -m pip &>/dev/null; then
+   echo Pip available
+else
+   echo Pip not available, please install it or add to the PATH variable
+   exit 1
+fi
+
+# CHECK VIRTUALENV COMMAND
+if command -v python3 -m venv &>/dev/null; then
+   echo Venv command available
+else
+   echo Venv not available, please install it [For example: python3 -m pip install python-venv]
+   exit 1
+fi
+
+# PARSE PYTHON_VERSION FROM INPUT ARGUMENTS
+PYTHON_VERSION=3.7m
+while test "$#" -gt 0 ; do
+    case $1 in
+        --python-version) PYTHON_VERSION="$2"; shift ;;
+        *) COMMAND=$1; ;;
+    esac
+    shift
+done
+echo "Python version is ${PYTHON_VERSION}"
+echo ""
+
+# CHECK VENV NOT EXISTS
+if [ ! -d .venv ]; then
+    python${PYTHON_VERSION} -m venv .venv
+    .venv/bin/python tools/get-pip.py
+    # pip building dependency
+    .venv/bin/pip3 install wheel
+    .venv/bin/pip3 install setuptools
+    .venv/bin/pip3 install -r build-requirements.txt
+fi
+
+function clean_build {
+    echo 'Clear previous build'
+    rm -fr dist
+    rm -fr build
+    rm -fr gencmd.egg-info
+    rm -fr gencmd.c
+    rm -fr gencmd.v.c
+}
+
+if [ "x$COMMAND" == "xclear" ] || [ "x$COMMAND" == "xclean" ]; then
+    clean_build
+fi
+
+function pip_build {
+    clean_build
+    echo 'Build package gencmd'
+
+    # Build tools for build)
+    mkdir -p build
+    rm -fr ~/.vmodules/cache/
+    V_FLAGS='-v -cg -shared -keepc'
+    # gcc tools/makeheaders.c -o build/makeheaders
+    v $V_FLAGS gencmd.v -o build/libgencmd || exit 1
+    # Mock library for tests
+    v $V_FLAGS thirdparty/mocks/vchiq_arm/vchiq_arm.v -o build/libvchiq_arm || exit 1
+    v $V_FLAGS thirdparty/mocks/bcm_host/bcm_host.v -o build/libbcm_host || exit 1
+
+    cp /tmp/v/libgencmd.tmp.so.c build/gencmd.sample.c || exit 1
+    cp build/gencmd.sample.c gencmd.v.c || exit 1
+    cp /tmp/v/libvchiq_arm.tmp.so.c build/vchiq_arm.sample.c || exit 1
+    cp /tmp/v/libbcm_host.tmp.so.c build/bcm_host.sample.c || exit 1
+
+    .venv/bin/python setup.py bdist_wheel
+}
+
+if [ "x$COMMAND" == "xpip" ]; then
+    pip_build
+fi
+
+if [ "x$COMMAND" == "xbuild" ]; then
+    pip_build
+fi
+
+
+if [ "x$COMMAND" == "xtests" ] || [ "x$COMMAND" == "xtest" ]; then
+    pip_build
+    .venv/bin/pip3 install -r tests-requirements.txt
+
+    .venv/bin/pip uninstall -y gencmd
+    .venv/bin/pip install dist/*.whl
+    .venv/bin/python3 -m unittest -v tests.test_methods.TestMethods
+fi
+
+if [ "x$COMMAND" == "xpublish" ]; then
+    pip_build
+    .venv/bin/pip3 install twine
+
+    .venv/bin/python3 setup.py sdist || exit 1
+    # Additional sources
+    VERSION=`cat .version`
+    tar -zxf dist/gencmd-$VERSION.tar.gz -C dist
+    cp gencmd.pyx dist/gencmd-$VERSION
+    cp gencmd_wrapper.pxd dist/gencmd-$VERSION
+    cp -fR c dist/gencmd-$VERSION
+    cp -fR thirdparty dist/gencmd-$VERSION
+    cp .version dist/gencmd-$VERSION
+    rm -fr dist/gencmd-$VERSION.tar.gz
+    tar -zcf dist/gencmd-$VERSION.tar.gz -C dist gencmd-$VERSION
+    rm -fr dist/gencmd-$VERSION
+
+    .venv/bin/python3 -m twine check dist/* || exit 1
+
+    .venv/bin/python3 -m twine upload dist/*.tar.gz || exit 1
+fi
+
+AVAILABLE_COMMANDS="clear clean pip build test tests publish"
+echo ''
+[[ $AVAILABLE_COMMANDS =~ (^| )$COMMAND($| ) ]] && echo 'Ok' || echo 'Unknown command: ' "$COMMAND"
+
