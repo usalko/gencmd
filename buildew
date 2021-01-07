@@ -100,7 +100,20 @@ if [ "x$COMMAND" == "xpublish" ]; then
     pip_build
     .venv/bin/pip3 install twine
 
-    .venv/bin/python3 setup.py sdist
+    .venv/bin/python3 setup.py sdist || exit 1
+    # Additional sources
+    VERSION=`cat .version`
+    tar -zxf dist/gencmd-$VERSION.tar.gz -C dist
+    cp gencmd.pyx dist/gencmd-$VERSION
+    cp gencmd.h dist/gencmd-$VERSION
+    cp gencmd_wrapper.pxd dist/gencmd-$VERSION
+    cp .version dist/gencmd-$VERSION
+    rm -fr dist/gencmd-$VERSION.tar.gz
+    tar -zcf dist/gencmd-$VERSION.tar.gz -C dist gencmd-$VERSION
+    rm -fr dist/gencmd-$VERSION
+
+    #gzip dist/gencmd-$VERSION.tar
+
     .venv/bin/python3 -m twine check dist/* || exit 1
 
     # .venv/bin/pip3 install auditwheel
