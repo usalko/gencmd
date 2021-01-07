@@ -1,11 +1,12 @@
 cimport cython
 
-cdef extern from 'gencmd.h':
+cdef extern:
 	ctypedef bint bool
 	ctypedef unsigned char * byteptr
+	ctypedef char * charptr
 	ctypedef void * voidptr
-	struct string:
-		void* str
+	ctypedef struct string:
+		byteptr str
 		int len
 		int is_lit
 
