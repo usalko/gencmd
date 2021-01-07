@@ -101,10 +101,14 @@ if [ "x$COMMAND" == "xpublish" ]; then
     .venv/bin/pip3 install twine
 
     .venv/bin/python3 setup.py sdist
-    .venv/bin/python3 -m twine upload dist/*
+    .venv/bin/python3 -m twine check dist/* || exit 1
+
+    # .venv/bin/pip3 install auditwheel
+    # .venv/bin/auditwheel show ./dist/*.whl
+    .venv/bin/python3 -m twine upload dist/*.tar.gz || exit 1
 fi
 
-AVAILABLE_COMMANDS="clear clean pip build test tests"
+AVAILABLE_COMMANDS="clear clean pip build test tests publish"
 echo ''
 [[ $AVAILABLE_COMMANDS =~ (^| )$COMMAND($| ) ]] && echo 'Ok' || echo 'Unknown command: ' "$COMMAND"
 
