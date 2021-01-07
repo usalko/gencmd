@@ -14,7 +14,7 @@ def read(file_name):
         return f.read()
 
 setup(name='gencmd',
-    description='Library for send commands to video-core on Raspberry Pi',
+    description='Library for send commands to the video-core on Raspberry Pi',
     author='Vanya Usalko',
     author_email='ivict@rambler.ru',
     url="http://github.com/usalko/gencmd",
