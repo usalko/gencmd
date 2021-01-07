@@ -5,7 +5,7 @@ Simple library (python3) for send commands to the video-core on Raspberry Pi
 When I've tested my own solution to measure voltage and temperature on video-core. I discovered that run 'gencmd' directly like a process sometimes is not good enough. For example, in the case when the measurement frequency is less than one second. So there is a simple library for pass commands directly to the video-core.
 
 ## PyPi package
-Package available through pypi.org: https://pypi.org/manage/project/gencmd
+Package available through pypi.org: https://pypi.org/project/gencmd
 
 ## build
 If you have the necessity to build a package from sources keep in mind that I've used vlang: https://github.com/vlang/v
