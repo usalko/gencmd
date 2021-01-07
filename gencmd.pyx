@@ -11,7 +11,7 @@ cdef class GenCmd(object):
     def send(self, cmd: str) -> str:
         cmd_bytes = cmd.encode('UTF-8')
         cdef string v_string
-        v_string.str = <char*>cmd_bytes
+        v_string.str = <unsigned char*>cmd_bytes
         v_string.len = len(cmd_bytes)
         v_string.is_lit = 0
         result = gencmd__gencmd(v_string)

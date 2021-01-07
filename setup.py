@@ -7,6 +7,8 @@ import io
 import os
 
 
+package_version=open('.version', 'r').read()
+
 def read(file_name):
     """Read a text file and return the content as a string."""
     with io.open(os.path.join(os.path.dirname(__file__), file_name),
@@ -18,7 +20,7 @@ setup(name='gencmd',
     author='Vanya Usalko',
     author_email='ivict@rambler.ru',
     url="http://github.com/usalko/gencmd",
-    version=open('.version', 'r').read(),
+    version=package_version,
     py_modules=['gencmd'],
     long_description=read('README.md'),
     long_description_content_type='text/markdown',
@@ -34,19 +36,17 @@ setup(name='gencmd',
     ext_modules = cythonize(
         [
             Extension('gencmd',
-            sources=['gencmd.pyx'],
-            libraries=['gencmd', 'vchiq_arm', 'bcm_host'],
+            sources=['c/gencmd.c', 'gencmd.v.c', 'gencmd.pyx'],
+            library_dirs = ['/opt/vc/lib'],
+            libraries=['vchiq_arm', 'bcm_host'],
             language='v',
-            extra_compile_args=['-I./'],
+            extra_compile_args=['-Ic', '-Ithirdparty/vc'],
             extra_link_args=[
-                '-L./build/', '-Wl,-rpath,$ORIGIN/../../../',
+                '-L./build/', '-Wl,-rpath,$ORIGIN',
                 '-Wl,-rpath,/opt/vc/lib',
             ])
         ],
         compiler_directives={'language_level': '3'},
         gdb_debug=True
-    ),
-    data_files=[
-        ('.', ['build/libgencmd.so']),
-    ]
+    )
 )

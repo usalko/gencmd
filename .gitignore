@@ -5,6 +5,7 @@ dist
 
 # cython output
 gencmd.c
+gencmd.v.c
 
 # setup.py bdist_wheel output
 gencmd.egg-info

@@ -71,9 +71,10 @@ function pip_build {
     v $V_FLAGS thirdparty/mocks/vchiq_arm/vchiq_arm.v -o build/libvchiq_arm || exit 1
     v $V_FLAGS thirdparty/mocks/bcm_host/bcm_host.v -o build/libbcm_host || exit 1
 
-    cp /tmp/v/libgencmd.tmp.so.c build/gencmd.sample.h || exit 1
-    cp /tmp/v/libvchiq_arm.tmp.so.c build/vchiq_arm.sample.h || exit 1
-    cp /tmp/v/libbcm_host.tmp.so.c build/bcm_host.sample.h || exit 1
+    cp /tmp/v/libgencmd.tmp.so.c build/gencmd.sample.c || exit 1
+    cp build/gencmd.sample.c gencmd.v.c || exit 1
+    cp /tmp/v/libvchiq_arm.tmp.so.c build/vchiq_arm.sample.c || exit 1
+    cp /tmp/v/libbcm_host.tmp.so.c build/bcm_host.sample.c || exit 1
 
     .venv/bin/python setup.py bdist_wheel
 }
@@ -105,8 +106,9 @@ if [ "x$COMMAND" == "xpublish" ]; then
     VERSION=`cat .version`
     tar -zxf dist/gencmd-$VERSION.tar.gz -C dist
     cp gencmd.pyx dist/gencmd-$VERSION
-    cp gencmd.h dist/gencmd-$VERSION
     cp gencmd_wrapper.pxd dist/gencmd-$VERSION
+    cp -fR c dist/gencmd-$VERSION
+    cp -fR thirdparty dist/gencmd-$VERSION
     cp .version dist/gencmd-$VERSION
     rm -fr dist/gencmd-$VERSION.tar.gz
     tar -zcf dist/gencmd-$VERSION.tar.gz -C dist gencmd-$VERSION
