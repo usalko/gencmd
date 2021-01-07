@@ -96,6 +96,14 @@ if [ "x$COMMAND" == "xtests" ] || [ "x$COMMAND" == "xtest" ]; then
     .venv/bin/python3 -m unittest -v tests.test_methods.TestMethods
 fi
 
+if [ "x$COMMAND" == "xpublish" ]; then
+    pip_build
+    .venv/bin/pip3 install twine
+
+    .venv/bin/python3 setup.py sdist
+    .venv/bin/python3 -m twine upload dist/*
+fi
+
 AVAILABLE_COMMANDS="clear clean pip build test tests"
 echo ''
 [[ $AVAILABLE_COMMANDS =~ (^| )$COMMAND($| ) ]] && echo 'Ok' || echo 'Unknown command: ' "$COMMAND"
